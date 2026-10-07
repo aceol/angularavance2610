@@ -9,6 +9,11 @@
       "description": "A blank schematic.",
       "factory": "./api-service/index#apiService",
       "schema": "./api-service/schema.json"
+    },
+    "state-service": {
+      "description": "A blank schematic.",
+      "factory": "./state-service/index#stateService",
+      "schema": "./state-service/schema.json"
     }
   }
 }
