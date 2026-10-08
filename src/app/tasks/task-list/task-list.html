@@ -6,7 +6,9 @@
 <section>
   <h3>À faire</h3>
   @for (task of tasksTodo(); track task.id) {
-    <article>{{ task.title }}</article>
+    <article>
+      <a [routerLink]="[task.id]">{{ task.title }}</a>
+    </article>
   } @empty {
     <p>Aucune tâche à faire !</p>
   }
@@ -15,7 +17,9 @@
 <section>
   <h3>En cours</h3>
   @for (task of tasksInProgress(); track task.id) {
-    <article>{{ task.title }}</article>
+    <article>
+      <a [routerLink]="[task.id]">{{ task.title }}</a>
+    </article>
   } @empty {
     <p>Rien en cours.</p>
   }
@@ -24,7 +28,9 @@
 <section>
   <h3>Terminé</h3>
   @for (task of tasksDone(); track task.id) {
-    <article>{{ task.title }}</article>
+    <article>
+      <a [routerLink]="[task.id]">{{ task.title }}</a>
+    </article>
   } @empty {
     <p>Aucune tâche terminée.</p>
   }

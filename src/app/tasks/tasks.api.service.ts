@@ -36,8 +36,9 @@ export class TasksApiService {
     // On simule un délai réseau de 500ms
     return of(MOCK_TASKS).pipe(delay(500));
   }
-  getById(id: string | number): Observable<any> {
-    return this.#http.get<any>(`${this.#baseUrl}/${id}`);
+  getById(id: string): Observable<Task | undefined> {
+    const task = MOCK_TASKS.find((task) => task.id === id);
+    return timer(300).pipe(map(() => task));
   }
   create(data: any): Observable<any> {
     return this.#http.post<any>(this.#baseUrl, data);
