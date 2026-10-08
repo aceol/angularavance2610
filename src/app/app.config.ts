@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import {
   PreloadAllModules,
   provideRouter,
+  withComponentInputBinding,
   withDebugTracing,
   withPreloading,
 } from '@angular/router';
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       // withDebugTracing(),
+      withComponentInputBinding(),
       withPreloading(PreloadAllModules),
     ),
     provideHttpClient(),
