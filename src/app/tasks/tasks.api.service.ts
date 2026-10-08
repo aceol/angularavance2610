@@ -33,8 +33,8 @@ export class TasksApiService {
 
   // Fonctions CRUD basiques qui retournent des Observables bruts
   getAll(): Observable<any[]> {
-    // On simule un délai réseau de 1000ms
-    return of(MOCK_TASKS).pipe(delay(1000));
+    // On simule un délai réseau de 500ms
+    return of(MOCK_TASKS).pipe(delay(500));
   }
   getById(id: string | number): Observable<any> {
     return this.#http.get<any>(`${this.#baseUrl}/${id}`);
