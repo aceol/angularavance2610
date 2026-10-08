@@ -1,5 +1,5 @@
 <form (submit)="saveTask(); $event.preventDefault()">
-  <h3>Nouvelle tâche</h3>
+  <h3 i18n="@@taskForm.title|Titre du formulaire de création de tâche">Nouvelle tâche</h3>
   <div class="form-field">
     <label for="title">Titre</label>
     <input id="title" type="text" [formField]="taskForm.title" />
@@ -31,9 +31,9 @@
   </div>
   <button type="submit" [disabled]="taskForm().invalid() || taskForm().pending() || isAdding()">
     @if (isAdding()) {
-      <span>Sauvegarde en cours...</span>
+      <span i18n>Sauvegarde en cours...</span>
     } @else {
-      <span>Enregistrer</span>
+      <span i18n="@@taskForm.saveButton|Bouton pour enregistrer la tâche">Enregistrer</span>
     }
   </button>
   @if (addError()) {

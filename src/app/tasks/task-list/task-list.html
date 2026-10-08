@@ -4,7 +4,7 @@
   <app-task-form (taskSaved)="closeForm()" />
 }
 <section>
-  <h3>À faire</h3>
+  <h3 i18n="@@tasks.todoColumnHeader|Titre pour la colonne des tâches à faire">À faire</h3>
   @for (task of tasksTodo(); track task.id) {
     <article>
       <a [routerLink]="[task.id]">{{ task.title }}</a>
@@ -15,7 +15,7 @@
 </section>
 
 <section>
-  <h3>En cours</h3>
+  <h3 i18n="@@tasks.inProgressColumnHeader|Titre pour la colonne des tâches en cours">En cours</h3>
   @for (task of tasksInProgress(); track task.id) {
     <article>
       <a [routerLink]="[task.id]">{{ task.title }}</a>
@@ -26,7 +26,7 @@
 </section>
 
 <section>
-  <h3>Terminé</h3>
+  <h3 i18n="@@tasks.doneColumnHeader|Titre pour la colonne des tâches terminées">Terminé</h3>
   @for (task of tasksDone(); track task.id) {
     <article>
       <a [routerLink]="[task.id]">{{ task.title }}</a>
