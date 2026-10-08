@@ -3,8 +3,8 @@ import {
   PreloadAllModules,
   provideRouter,
   withComponentInputBinding,
-  withDebugTracing,
   withPreloading,
+  withRouterResources,
 } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       // withDebugTracing(),
       withComponentInputBinding(),
+      withRouterResources(),
       withPreloading(PreloadAllModules),
     ),
     provideHttpClient(),
