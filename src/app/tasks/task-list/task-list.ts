@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TasksStateService } from '../tasks.state.service';
+import { TaskForm } from '../task-form/task-form';
 
 @Component({
-  imports: [],
+  imports: [TaskForm],
   selector: 'app-task-list',
   styleUrl: './task-list.scss',
   templateUrl: './task-list.html',
@@ -14,8 +15,14 @@ export class TaskList {
   protected readonly tasksInProgress = this.#tasksState.tasksInProgress;
   protected readonly tasksDone = this.#tasksState.tasksDone;
   protected readonly totalTasks = this.#tasksState.totalTasks;
+  // Signal pour gérer la visibilité du formulaire
+  protected readonly isFormVisible = signal(false);
 
   ngOnInit() {
     this.#tasksState.fetchAll();
+  }
+
+  protected closeForm(): void {
+    this.isFormVisible.set(false);
   }
 }

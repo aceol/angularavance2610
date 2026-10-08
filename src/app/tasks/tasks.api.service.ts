@@ -1,7 +1,7 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { delay, Observable, of } from 'rxjs';
+import { delay, map, Observable, of, timer } from 'rxjs';
 import { Task } from '../core/models/task.model';
 
 const MOCK_TASKS: Task[] = [
@@ -47,5 +47,19 @@ export class TasksApiService {
   }
   delete(id: string | number): Observable<void> {
     return this.#http.delete<void>(`${this.#baseUrl}/${id}`);
+  }
+
+  isTitleTaken(title: string): Observable<boolean> {
+    const isTaken = MOCK_TASKS.some((t) => t.title.toLowerCase() === title.toLowerCase());
+    return timer(500).pipe(map(() => isTaken));
+  }
+
+  addTask(taskData: Omit<Task, 'id'>): Observable<Task> {
+    const newTask: Task = {
+      ...taskData,
+      id: `task-${Math.random().toString(36).substring(2, 9)}`, //Simulation d'un ID unique
+    };
+    MOCK_TASKS.push(newTask);
+    return timer(500).pipe(map(() => newTask));
   }
 }
