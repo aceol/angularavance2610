@@ -1,44 +1,35 @@
-<form [formGroup]="taskForm" (ngSubmit)="saveTask()">
+<form (submit)="saveTask(); $event.preventDefault()">
   <h3>Nouvelle tâche</h3>
   <div class="form-field">
     <label for="title">Titre</label>
-    <input id="title" type="text" formControlName="title" />
-    @if (taskForm.controls.title.pending) {
+    <input id="title" type="text" [formField]="taskForm.title" />
+    @if (taskForm.title().pending()) {
       <small>Vérification de l'unicité...</small>
     }
-    @if (taskForm.controls.title.touched) {
-      @if (taskForm.controls.title.hasError('uniqueTitle')) {
-        <small class="error">Ce titre est déjà pris.</small>
-      }
-      @if (taskForm.controls.title.hasError('required')) {
-        <small class="error">Le titre est requis.</small>
-      }
-      @if (taskForm.controls.title.hasError('minlength')) {
-        <small class="error">Le titre doit faire au moins 5 caractères. </small>
+    @if (taskForm.title().touched()) {
+      @for (errorMessage of taskForm.title().errors(); track errorMessage) {
+        <small class="error">{{ errorMessage.message }}</small>
       }
     }
   </div>
   <div class="form-field">
     <label for="description">Description</label>
-    <textarea id="description" formControlName="description"></textarea>
-    @if (
-      taskForm.controls.description.touched &&
-      taskForm.controls.description.hasError('forbiddenWord')
-    ) {
-      <small class="error">{{
-        taskForm.controls.description.errors?.['forbiddenWord'].value
-      }}</small>
+    <textarea id="description" [formField]="taskForm.description"></textarea>
+    @if (taskForm.description().touched()) {
+      @for (errorMessage of taskForm.description().errors(); track errorMessage) {
+        <small class="error">{{ errorMessage.message }}</small>
+      }
     }
   </div>
   <div class="form-field">
     <label for="status">Statut</label>
-    <select id="status" formControlName="status">
+    <select id="status" [formField]="taskForm.status">
       <option value="TODO">À faire</option>
       <option value="IN_PROGRESS">En cours</option>
       <option value="DONE">Terminé</option>
     </select>
   </div>
-  <button type="submit" [disabled]="taskForm.invalid || taskForm.pending || isAdding()">
+  <button type="submit" [disabled]="taskForm().invalid() || taskForm().pending() || isAdding()">
     @if (isAdding()) {
       <span>Sauvegarde en cours...</span>
     } @else {
