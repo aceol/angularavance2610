@@ -6,7 +6,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
 import { AuthApiService, User } from './auth-api.service';
-import { withDevtools, withStorageSync } from '@ngrx-toolkit/core';
+import { withDevtools, withLocalStorage, withStorageSync } from '@ngrx-toolkit/core';
 import { Router } from '@angular/router';
 
 export interface AuthState {
@@ -25,7 +25,7 @@ export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withDevtools('phoenix-auth'),
-  withStorageSync('phoenix-auth'),
+  withStorageSync('phoenix-auth', withLocalStorage()),
   withComputed(({ user }) => ({
     isLoggedIn: computed(() => user() !== null),
     displayName: computed(() => user()?.firstName ?? 'Invité'),
