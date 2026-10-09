@@ -1,21 +1,107 @@
+import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { delay, of } from 'rxjs';
+
 import { TaskForm } from './task-form';
+import { TasksStateService } from '../tasks.state.service';
+import { UniqueTitleValidator } from '../../core/validators/unique-title.validators';
+
+function tickAsync(delayMs = 0): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
 
 describe('TaskForm', () => {
   let component: TaskForm;
   let fixture: ComponentFixture<TaskForm>;
+  let mockTasksStateService: Pick<TasksStateService, 'addTask' | 'isAdding' | 'addError'>;
+  let mockUniqueTitleValidator: Pick<UniqueTitleValidator, 'validate'>;
+
+  beforeEach(() => {
+    mockTasksStateService = {
+      addTask: vi.fn().mockName('TasksStateService.addTask'),
+      isAdding: signal(false),
+      addError: signal(null),
+    };
+    vi.mocked(mockTasksStateService.addTask).mockReturnValue(of({} as any));
+
+    mockUniqueTitleValidator = {
+      validate: vi.fn().mockName('UniqueTitleValidator.validate').mockReturnValue(of(null)),
+    };
+  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskForm],
+      imports: [TaskForm, ReactiveFormsModule],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: TasksStateService, useValue: mockTasksStateService },
+        { provide: UniqueTitleValidator, useValue: mockUniqueTitleValidator },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskForm);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('doit activer le bouton de soumission quand le formulaire est valide', () => {
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    expect(submitButton.disabled).toBe(true);
+
+    const titleInput = fixture.nativeElement.querySelector('#title');
+    titleInput.value = 'Un titre valide';
+    titleInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    expect(submitButton.disabled).toBe(false);
+  });
+
+  it('doit appeler la méthode addTask du service lors de la soumission du formulaire', () => {
+    const titleInput = fixture.nativeElement.querySelector('#title');
+    titleInput.value = 'Titre de test';
+    titleInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const submitButton = fixture.nativeElement.querySelector('button[type="submit"]');
+    submitButton.click();
+    fixture.detectChanges();
+
+    expect(mockTasksStateService.addTask).toHaveBeenCalledTimes(1);
+
+    expect(mockTasksStateService.addTask).toHaveBeenCalledWith({
+      title: 'Titre de test',
+      description: '',
+      status: 'TODO',
+    });
+  });
+
+  it('doit afficher un message d\'erreur si la description contient un mot interdit et que le champ a été "touché"', () => {
+    const descriptionInput = fixture.nativeElement.querySelector('#description');
+    descriptionInput.value = 'Je vais faire de la procrastination';
+    descriptionInput.dispatchEvent(new Event('input'));
+    descriptionInput.dispatchEvent(new Event('blur')); // On simule le "blur" pour passer le champ en "touched"
+    fixture.detectChanges();
+
+    const errorElement = fixture.nativeElement.querySelector('small');
+    expect(errorElement.textContent).toContain('Le mot "procrastination" est interdit.');
+  });
+
+  it('doit afficher un message d\'erreur si le titre est déjà pris et que le champ a été "touché"', async () => {
+    vi.mocked(mockUniqueTitleValidator.validate).mockReturnValue(
+      of({ uniqueTitle: true }).pipe(delay(0)),
+    );
+
+    const titleInput = fixture.nativeElement.querySelector('#title');
+    titleInput.value = 'Un titre déjà pris';
+    titleInput.dispatchEvent(new Event('input'));
+    titleInput.dispatchEvent(new Event('blur'));
+
+    await tickAsync(0);
+    await fixture.whenStable();
+
+    const errorElement = fixture.nativeElement.querySelector('.error');
+    expect(errorElement.textContent).toContain('Ce titre est déjà pris.');
   });
 });
